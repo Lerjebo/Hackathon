@@ -107,7 +107,7 @@ function App () {
 
   const handleSubmit = (event: any) => {
     event.preventDefault()
-
+    console.log(teamInformation.ChallengeExpectedOutputs)
     let correctAnswer = teamInformation.ChallengeExpectedOutputs.get(
       currentChallenge.toString()
     ).N
@@ -153,6 +153,8 @@ function App () {
         }
         setTeamInformation(teamInformation)
         setCurrentTeam(inputs.teamName)
+        console.log("RGU")
+        console.log(teamInformation)
       } else {
         let addr = API_BASE_URL + '/Hackathon/postTeam'
         setQueueLock(true)
@@ -168,6 +170,7 @@ function App () {
           })
           .catch(reason => alert('Could not add team, try again!'))
       }
+      
     })
   }
   if (currentTeam == '') {
@@ -193,6 +196,8 @@ function App () {
                   margin: 'auto',
                   display: 'inline-grid',
                   marginTop: '10%',
+                  marginBottom: '10%',
+                  background: 'white',
                   width: '100%'
                 }}
                 onSubmit={handleSubmitTeamName}

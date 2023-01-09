@@ -108,9 +108,7 @@ module.exports.getTeam = async (event, context) => {
   }
 }
 
-async function getChallenges(teamName){
-
-  
+async function getChallenges (teamName) {
   //CHALLENGE 0
   var lengthOfLongestSubstring = function ([string]) {
     var max = 0,
@@ -135,72 +133,129 @@ async function getChallenges(teamName){
     return haystack.indexOf(needle)
   }
   //CHALLENGE 2
-  var minJumps = function([steps]) {
-    const minJumps = new Array(steps.length).fill(Infinity);
-    minJumps[0] = 0;
+  var minJumps = function ([steps]) {
+    const minJumps = new Array(steps.length).fill(Infinity)
+    minJumps[0] = 0
     for (let i = 0; i < steps.length; i++) {
       for (let j = 1; j <= steps[i]; j++) {
         if (i + j < steps.length) {
-          minJumps[i + j] = Math.min(minJumps[i + j], minJumps[i] + 1);
+          minJumps[i + j] = Math.min(minJumps[i + j], minJumps[i] + 1)
         }
       }
     }
-  
-    return minJumps[steps.length - 1];
+
+    return minJumps[steps.length - 1]
   }
   //CHALLENGE 3
   var countPalindromes = function ([s]) {
-    let n = s.length;
-    let count = 0;
+    let n = s.length
+    let count = 0
     for (let i = 0; i < n; i++) {
-      let palindromeOdd = getPalindromeLength(s, i, i);
-      let palindromeEven = getPalindromeLength(s, i, i + 1);
-      count += palindromeOdd + palindromeEven;
+      let palindromeOdd = getPalindromeLength(s, i, i)
+      let palindromeEven = getPalindromeLength(s, i, i + 1)
+      count += palindromeOdd + palindromeEven
     }
-    return count;
+    return count
   }
-  var getPalindromeLength= function (s, left, right) {
-    let count = 0;
+  var getPalindromeLength = function (s, left, right) {
+    let count = 0
     while (left >= 0 && right < s.length && s[left] === s[right]) {
-      count++;
-      left--;
-      right++;
+      count++
+      left--
+      right++
     }
-    return count;
+    return count
   }
   //CHALLENGE 4
-  var sumOfSquares= function([numbers]) {
-    let sum = 0;
+  var sumOfSquares = function ([numbers]) {
+    let sum = 0
     for (let i = 0; i < numbers.length; i++) {
       if (numbers[i] % 2 === 0) {
-        sum += numbers[i] ** 2;
+        sum += numbers[i] ** 2
       }
     }
-    return sum;
+    return sum
   }
-  //CHALLENGE 4
-  var replaceVowels = function([str]) {
-    let vowels = 'aeiouAEIOU';
-    let newStr = '';
+  //CHALLENGE 5
+  var replaceVowels = function ([str]) {
+    let vowels = 'aeiouAEIOU'
+    let newStr = ''
     for (let i = 0; i < str.length; i++) {
       if (vowels.indexOf(str[i]) !== -1) {
-        newStr += '*';
+        newStr += '*'
       } else {
-        newStr += str[i];
+        newStr += str[i]
       }
     }
-    return newStr;
+    return newStr
   }
-
-
-  function generateRandomInputVow(length) {
-    let input = '';
-    for (let i = 0; i < length; i++) {
-      input += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+  //CHALLENGE 6
+  var findMaximumSubarray = function ([nums]) {
+    let maxSum = nums[0]
+    let currentSum = 0
+    for (let i = 0; i < nums.length; i++) {
+      currentSum = Math.max(currentSum + nums[i], nums[i])
+      maxSum = Math.max(maxSum, currentSum)
     }
-    return input;
+    return maxSum
   }
 
+  //CHALLENGE 7
+  var findMinimumSwapsToSortArray = function ([arr]) {
+    let swaps = 0
+    for (let i = 0; i < arr.length; i++) {
+      while (arr[i] !== i + 1) {
+        let temp = arr[i]
+        arr[i] = arr[temp - 1]
+        arr[temp - 1] = temp
+        swaps++
+      }
+    }
+    return swaps
+  }
+  //CHALLENGE 8
+  var findMinimumPathSum = function ([matrix]) {
+    // Initialize an array to store the minimum path sum to each cell
+    const dp = Array(matrix.length)
+      .fill(null)
+      .map(() => Array(matrix[0].length).fill(null))
+    dp[0][0] = matrix[0][0]
+    for (let i = 0; i < matrix.length; i++) {
+      for (let j = 0; j < matrix[0].length; j++) {
+        if (i === 0 && j === 0) continue
+        if (i === 0) {
+          dp[i][j] = dp[i][j - 1] + matrix[i][j]
+        } else if (j === 0) {
+          dp[i][j] = dp[i - 1][j] + matrix[i][j]
+        } else {
+          dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + matrix[i][j]
+        }
+      }
+    }
+    return dp[matrix.length - 1][matrix[0].length - 1]
+  }
+  var longestIntegerSequene = function findLongestSequence ([arr]) {
+    arr.sort((a, b) => a - b)
+    let longest = 0
+    let current = 1
+    for (let i = 1; i < arr.length; i++) {
+      if (arr[i] === arr[i - 1] + 1) {
+        current++
+      } else {
+        current = 1
+      }
+      longest = Math.max(longest, current)
+    }
+    return longest
+  }
+
+  function generateRandomInputVow (length) {
+    let input = ''
+    for (let i = 0; i < length; i++) {
+      input += String.fromCharCode(Math.floor(Math.random() * 26) + 97)
+    }
+    return input
+  }
 
   //ADD challenge functions below.
   let challengeFunctions = [
@@ -209,7 +264,11 @@ async function getChallenges(teamName){
     ([inp]) => minJumps([inp]),
     ([inp]) => countPalindromes([inp]),
     ([inp]) => sumOfSquares([inp]),
-    ([inp]) => replaceVowels([inp])
+    ([inp]) => replaceVowels([inp]),
+    ([inp]) => findMaximumSubarray([inp]),
+    ([inp]) => findMinimumSwapsToSortArray([inp]),
+    ([inp]) => findMinimumPathSum([inp]),
+    ([inp]) => longestIntegerSequene([inp])
   ]
 
   //ADD challenge inputs below.
@@ -223,21 +282,56 @@ async function getChallenges(teamName){
       )
       return [randStr, substr]
     },
-    () => [Array.from({length: 500}, () => Math.floor(Math.random() * 6)+1)],
+    () => [
+      Array.from({ length: 500 }, () => Math.floor(Math.random() * 6) + 1)
+    ],
     () => [generateString(100)],
-    () => [Array.from({length: 500}, () => Math.floor(Math.random() * 100)+1)],
-    () => [generateRandomInputVow(100)]
+    () => [
+      Array.from({ length: 500 }, () => Math.floor(Math.random() * 100) + 1)
+    ],
+    () => [generateRandomInputVow(100)],
+    () => [
+      Array.from({ length: 500 }, () => Math.floor(Math.random() * 10) - 5)
+    ],
+    () => {
+      const numbers = []
+      for (let i = 1; i <= 110; i++) {
+        numbers.push(i)
+      }
+
+      // Randomize the list
+      numbers.sort(() => Math.random() - 0.5)
+      return [numbers]
+    },
+
+    () => {
+      const matrix = []
+      for (let i = 0; i < 10; i++) {
+        const row = []
+        for (let j = 0; j < 10; j++) {
+          row.push(Math.floor(Math.random() * 10) + 1)
+        }
+        matrix.push(row)
+      }
+      return [matrix]
+    },
+
+    () => [Array.from({ length: 500 }, () => Math.floor(Math.random() * 1000))]
   ]
 
   let teamInput = []
   for (let i = 0; i < challengeFunctions.length; i++) {
     let tempInp = generateRandomInput[i]()
     teamInput.push(tempInp)
+    let str = ''
+    for (const itm in tempInp) {
+      str += JSON.stringify(tempInp[itm]) + '\n'
+    }
     await s3
       .putObject({
         Bucket: 'codepage-hackathon-hackathon-inputfilesbucket-34eho671ijhs',
         Key: teamName + 'ch' + i + '.txt',
-        Body: tempInp.toString()
+        Body: str
       })
       .promise()
   }
@@ -262,14 +356,14 @@ module.exports.postTeam = async (event, context) => {
   let data = JSON.parse(event['body'])
   let teamName = data['teamName']
 
-  const challengeInfo = await getChallenges(teamName);
+  const challengeInfo = await getChallenges(teamName)
 
   var params = {
     TableName: 'HackathonTeams',
     Item: {
       PK: teamName,
       ChallengeStatus: challengeInfo[0],
-      ChallengeExpectedOutputs: challengeInfo[1],
+      ChallengeExpectedOutputs: challengeInfo[1]
     }
   }
   let resp = await docClient.put(params).promise()

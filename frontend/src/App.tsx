@@ -12,7 +12,7 @@ function App () {
   })
 
   const [challengeInfo, setChallengeInfo] = useState(() => new Map())
-  const [challengeInfoKeys, setChallengeInfoKeys] = useState<string[]>([])
+  const [challengeInfoKeys, setChallengeInfoKeys] = useState<String[]>([])
   const [currentTeam, setCurrentTeam] = useState('')
   const [queueLock, setQueueLock] = useState(false)
   const [currentChallenge, setCurrentChallenge] = useState(0)
@@ -281,8 +281,13 @@ function App () {
       </div>
     )
   } else {
-    challengeInfoKeys.sort()
 
+    let keys: any[] = []
+    teamInformation.ChallengeStatus.forEach(function(value, key) {
+      keys.push(key)
+    })
+ 
+      
     // Print the sorted array
     return (
       <>
@@ -330,7 +335,7 @@ function App () {
           <div className='paper' style={{ width: '30%' }}>
             <div className='pattern'>
               <div className='contentPattern'>
-                {challengeInfoKeys.map(key => (
+                {keys.map(key => (
                   <>
                     <a
                       href='#'

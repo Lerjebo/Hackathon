@@ -234,6 +234,8 @@ async function getChallenges (teamName) {
     }
     return dp[matrix.length - 1][matrix[0].length - 1]
   }
+  //CHALLENGE 9
+
   var longestIntegerSequene = function findLongestSequence ([arr]) {
     arr.sort((a, b) => a - b)
     let longest = 0
@@ -248,7 +250,50 @@ async function getChallenges (teamName) {
     }
     return longest
   }
+  //CHALLENGE 9
+  var countPrimes = function ([n]) {
+    let arr = new Array(n)
+    let ans = 0
+    for (let i = 2; i < n; i++) {
+      if (arr[i]) continue
+      ans++
+      for (let mult = i * i; mult < n; mult += i) arr[mult] = 1
+    }
+    return ans
+  }
+  //CHALLENGE 10
 
+  var numIslands = function ([grid]) {
+    let count = 0
+    function depthSearch (x, y) {
+      if (grid[x][y] === 1) {
+        grid[x][y] = 0
+      } else {
+        return
+      }
+      if (x < grid.length - 1) {
+        depthSearch(x + 1, y)
+      }
+      if (y < grid[x].length - 1) {
+        depthSearch(x, y + 1)
+      }
+      if (x > 0 && x < grid.length) {
+        depthSearch(x - 1, y)
+      }
+      if (y > 0 && y < grid[x].length) {
+        depthSearch(x, y - 1)
+      }
+    }
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[i].length; j++) {
+        if (grid[i][j] === 1) {
+          count++
+          depthSearch(i, j)
+        }
+      }
+    }
+    return count
+  }
   function generateRandomInputVow (length) {
     let input = ''
     for (let i = 0; i < length; i++) {
@@ -268,7 +313,9 @@ async function getChallenges (teamName) {
     ([inp]) => findMaximumSubarray([inp]),
     ([inp]) => findMinimumSwapsToSortArray([inp]),
     ([inp]) => findMinimumPathSum([inp]),
-    ([inp]) => longestIntegerSequene([inp])
+    ([inp]) => longestIntegerSequene([inp]),
+    ([inp]) => countPrimes([inp]),
+    ([inp]) => numIslands([inp])
   ]
 
   //ADD challenge inputs below.
@@ -316,7 +363,15 @@ async function getChallenges (teamName) {
       return [matrix]
     },
 
-    () => [Array.from({ length: 500 }, () => Math.floor(Math.random() * 1000))]
+    () => [Array.from({ length: 500 }, () => Math.floor(Math.random() * 1000))],
+    () => [Math.floor(Math.random() * (10000000 - 1000000 + 1)) + 1000000],
+
+    () => {
+      let arr = Array.from({ length: 10 }, () =>
+        Array.from({ length: 10 }, () => Math.round(Math.random()))
+      )
+      return [arr]
+    }
   ]
 
   let teamInput = []

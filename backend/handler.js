@@ -294,6 +294,74 @@ async function getChallenges (teamName) {
     }
     return count
   }
+
+  //CHALLENGE 11
+  var findWords = function ([words]) {
+    const cache = {
+      q: 0,
+      w: 0,
+      e: 0,
+      r: 0,
+      t: 0,
+      y: 0,
+      u: 0,
+      i: 0,
+      o: 0,
+      p: 0,
+      a: 1,
+      s: 1,
+      d: 1,
+      f: 1,
+      g: 1,
+      h: 1,
+      j: 1,
+      k: 1,
+      l: 1,
+      z: 2,
+      x: 2,
+      c: 2,
+      v: 2,
+      b: 2,
+      n: 2,
+      m: 2
+    }
+    const answ = []
+    words.forEach(word => {
+      if (word.length === 1) {
+        answ.push(word)
+      } else {
+        const currRow = cache[word[0].toLowerCase()]
+        for (let i = 1; i < word.length; i++) {
+          if (cache[word[i].toLowerCase()] !== currRow) break
+
+          if (i === word.length - 1) answ.push(word)
+        }
+      }
+    })
+    return answ.length
+  }
+
+
+  var reverseVowels = function([s]) {
+      const arr = [...s];
+      const VOWELS = 'aeiouAEIOU';
+
+      for(let i = 0, j = arr.length - 1; i < j; i++, j--) {
+          while (!VOWELS.includes(arr[i]) && i < j) {
+              i++;
+          }
+  
+          while (!VOWELS.includes(arr[j]) && i < j) {
+              j--;
+          }
+  
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+  
+      return arr.join('');
+  };
+
+
   function generateRandomInputVow (length) {
     let input = ''
     for (let i = 0; i < length; i++) {
@@ -301,7 +369,65 @@ async function getChallenges (teamName) {
     }
     return input
   }
+  function generateRandomInputTranslate (numWords) {
+    let words = []
+    const firstRow = "qwertyuiop";
+    const secondRow = "asdfghjkl";
+    const thirdRow = "zxcvbnm";
+    const allChars = firstRow + secondRow + thirdRow;
+    // Use a loop to generate the words
+    for (let i = 0; i < numWords; i++) {
+      // Determine the row that the word will be generated from
+      let row = Math.floor(Math.random() * 3)
+      let rowChars = ''
+      if (row === 0) {
+        rowChars = firstRow
+      } else if (row === 1) {
+        rowChars = secondRow
+      } else {
+        rowChars = thirdRow
+      }
 
+      // Generate a random word of random length between 3 and 8
+      let word = ''
+      let wordLen = 3 + Math.floor(Math.random() * 6)
+      for (let j = 0; j < wordLen; j++) {
+        // Use a random number between 0 and 1 to determine if we're going to select
+        // a character from a different row
+        if (Math.random() < 0.2) {
+          // 20% chance of selecting a character from a different row
+          let otherRowChars = allChars.replace(rowChars, '')
+          word += otherRowChars.charAt(
+            Math.floor(Math.random() * otherRowChars.length)
+          )
+        } else {
+          word += rowChars.charAt(Math.floor(Math.random() * rowChars.length))
+        }
+      }
+
+      // Add the generated word to the array
+      words.push(word)
+    }
+    return words
+  }
+  function generateRandomInputVowels (stringLen ) {
+    const vowels = "aeiouAEIOU";
+    var s = "";
+    
+    // Use a loop to generate the string
+    for (let i = 0; i < stringLen; i++) {
+      // Use a random number between 0 and 1 to determine if the current character
+      // is a vowel or not
+      if (Math.random() < 0.2) {
+        // 20% chance of the current character being a vowel
+        s += vowels.charAt(Math.floor(Math.random() * vowels.length));
+      } else {
+        // 80% chance of the current character being a consonant
+        s += String.fromCharCode(97 + Math.floor(Math.random() * 26));
+      }
+    }
+    return s;
+  }
   //ADD challenge functions below.
   let challengeFunctions = [
     ([inp]) => lengthOfLongestSubstring([inp]),
@@ -315,7 +441,11 @@ async function getChallenges (teamName) {
     ([inp]) => findMinimumPathSum([inp]),
     ([inp]) => longestIntegerSequene([inp]),
     ([inp]) => countPrimes([inp]),
-    ([inp]) => numIslands([inp])
+    ([inp]) => numIslands([inp]),
+    ([inp]) => findWords([inp]),
+    ([inp]) => reverseVowels([inp]),
+    
+
   ]
 
   //ADD challenge inputs below.
@@ -371,7 +501,9 @@ async function getChallenges (teamName) {
         Array.from({ length: 10 }, () => Math.round(Math.random()))
       )
       return [arr]
-    }
+    },
+    () => [generateRandomInputTranslate(100)],
+    () => [generateRandomInputVowels(50)]
   ]
 
   let teamInput = []

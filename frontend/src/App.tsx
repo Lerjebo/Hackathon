@@ -107,7 +107,6 @@ function App () {
 
   const handleSubmit = (event: any) => {
     event.preventDefault()
-    console.log(teamInformation.ChallengeExpectedOutputs)
     let correctAnswer = teamInformation.ChallengeExpectedOutputs.get(
       currentChallenge.toString()
     ).N
@@ -153,8 +152,6 @@ function App () {
         }
         setTeamInformation(teamInformation)
         setCurrentTeam(inputs.teamName)
-        console.log("RGU")
-        console.log(teamInformation)
       } else {
         let addr = API_BASE_URL + '/Hackathon/postTeam'
         setQueueLock(true)
@@ -283,9 +280,14 @@ function App () {
   } else {
 
     let keys: any[] = []
+    let keys_one: any[] = []
+
     teamInformation.ChallengeStatus.forEach(function(value, key) {
+      let newVal = parseInt(key)+1
       keys.push(key)
+      keys_one.push(newVal)
     })
+
  
       
     // Print the sorted array
@@ -344,7 +346,7 @@ function App () {
                       style={{ textDecoration: 'None' }}
                     >
                       {' '}
-                      {'Challenge: ' + key}
+                      {'Challenge: ' + keys_one[key]}
                     </a>
 
                     <span
@@ -373,7 +375,7 @@ function App () {
                 style={{ position: 'relative', height: '100%' }}
               >
                 <div style={{ marginLeft: '7%', marginRight: '3%' }}>
-                  {'Challenge ' + currentChallenge}
+                  {'Challenge ' + keys_one[currentChallenge]}
                   <br />
                   <br />
                   {challengeInfo.get(currentChallenge.toString())[0]}

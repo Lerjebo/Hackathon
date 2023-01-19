@@ -60,14 +60,11 @@ module.exports.getInput = async (event, context) => {
   let values = event['path'].split('/')
   let inputId = values[3]
 
-  console.log(inputId)
-
   let resp = await s3.getSignedUrl('getObject', {
     Bucket: 'codepage-hackathon-hackathon-inputfilesbucket-34eho671ijhs',
     Key: inputId + '.txt',
-    Expires: 1000
+    Expires: 100000
   })
-  console.log(resp)
   return {
     statusCode: 200,
     headers: {
@@ -86,10 +83,6 @@ module.exports.getTeam = async (event, context) => {
   }
 
   let teamId = decodeURIComponent(values[3])
-  console.log('Val')
-  console.log(values)
-
-  console.log(tempS)
   var params = {
     TableName: 'HackathonTeams',
     Key: {
@@ -250,7 +243,7 @@ async function getChallenges (teamName) {
     }
     return longest
   }
-  //CHALLENGE 9
+  //CHALLENGE 10
   var countPrimes = function ([n]) {
     let arr = new Array(n)
     let ans = 0
@@ -261,7 +254,7 @@ async function getChallenges (teamName) {
     }
     return ans
   }
-  //CHALLENGE 10
+  //CHALLENGE 11
 
   var numIslands = function ([grid]) {
     let count = 0
@@ -295,7 +288,7 @@ async function getChallenges (teamName) {
     return count
   }
 
-  //CHALLENGE 11
+  //CHALLENGE 12
   var findWords = function ([words]) {
     const cache = {
       q: 0,
@@ -341,6 +334,7 @@ async function getChallenges (teamName) {
     return answ.length
   }
 
+  //CHALLENGE 13
 
   var reverseVowels = function([s]) {
       const arr = [...s];
@@ -361,7 +355,53 @@ async function getChallenges (teamName) {
       return arr.join('');
   };
 
+    //CHALLENGE 14
 
+  var firstNonRepeatedChar= function ([str]) {
+    for (let i = 0; i < str.length; i++) {
+      if (str.indexOf(str[i]) === str.lastIndexOf(str[i])) {
+        return str[i];
+      }
+    }
+    return null;
+  }
+  //CHALLENGE 15
+
+
+  var largestOddNumber = function([num]) {
+
+    // Go through the string backwards until an odd digit is found then return that substring
+    for (let i = num.length - 1; i >= 0; i--) {
+        switch (num[i]) {
+            case "1":
+            case "3":
+            case "5":
+            case "7":
+            case "9":
+                return num.substring(0, i + 1);
+        }
+    }
+    
+    return "";
+};
+
+  function generateRandomInputOdd() {
+    let num = "";
+    num += Math.floor(Math.random() * 9 +1);
+
+    for (let i = 0; i < 25; i++) {
+      num += Math.floor(Math.random() * 10);
+    }
+    
+    return num;
+  }
+  function generateRandomString(length, characters) {
+    let result ="";
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+  }
   function generateRandomInputVow (length) {
     let input = ''
     for (let i = 0; i < length; i++) {
@@ -444,6 +484,13 @@ async function getChallenges (teamName) {
     ([inp]) => numIslands([inp]),
     ([inp]) => findWords([inp]),
     ([inp]) => reverseVowels([inp]),
+    ([inp]) => firstNonRepeatedChar([inp]),
+    ([inp]) => largestOddNumber([inp]),
+
+    
+
+
+    
     
 
   ]
@@ -494,7 +541,7 @@ async function getChallenges (teamName) {
     },
 
     () => [Array.from({ length: 500 }, () => Math.floor(Math.random() * 1000))],
-    () => [Math.floor(Math.random() * (10000000 - 1000000 + 1)) + 1000000],
+    () => [Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000],
 
     () => {
       let arr = Array.from({ length: 10 }, () =>
@@ -503,7 +550,11 @@ async function getChallenges (teamName) {
       return [arr]
     },
     () => [generateRandomInputTranslate(100)],
-    () => [generateRandomInputVowels(50)]
+    () => [generateRandomInputVowels(50)],
+    () => [generateRandomString(Math.floor(Math.random()*15)+40, "abcdefghijklmnopqrstuvwxyz")],
+    () => [generateRandomInputOdd()]
+
+    
   ]
 
   let teamInput = []
@@ -514,10 +565,11 @@ async function getChallenges (teamName) {
     for (const itm in tempInp) {
       str += JSON.stringify(tempInp[itm]) + '\n'
     }
+    let ind = i+1
     await s3
       .putObject({
         Bucket: 'codepage-hackathon-hackathon-inputfilesbucket-34eho671ijhs',
-        Key: teamName + 'ch' + i + '.txt',
+        Key: teamName + '_ch' + ind + '.txt',
         Body: str
       })
       .promise()
@@ -554,8 +606,7 @@ module.exports.postTeam = async (event, context) => {
     }
   }
   let resp = await docClient.put(params).promise()
-  console.log('RESP')
-  console.log(resp)
+
   return {
     statusCode: 200,
     headers: {
@@ -580,14 +631,12 @@ module.exports.updateTeam = async (event, context) => {
     }
   }
   let resp = await dynamodb.getItem(params).promise()
-  console.log(resp)
 
   let challengeId = data['challengeId']
   let challengeStatus = data['challengeStatus']
   const challengeStatusMap = {}
 
   for (const [key, value] of Object.entries(resp.Item.ChallengeStatus.M)) {
-    console.log(value)
     if (key == challengeId) {
       challengeStatusMap[key] = challengeStatus
     } else {
@@ -608,7 +657,6 @@ module.exports.updateTeam = async (event, context) => {
       ':updateValue': challengeStatusMap
     }
   }
-  console.log('HERE')
   try {
     await docClient.update(params).promise()
     return {

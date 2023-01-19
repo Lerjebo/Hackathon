@@ -71,9 +71,12 @@ function App () {
     if (Object.keys(challengeInfo).length == 0 && currentTeam != '') {
       getChallengesFromDatabase().then(data => {
         const [challengeData, status] = data
+
         Object.keys(challengeData['Items']).map(key => {
+          let getkey = parseInt(challengeData['Items'][key].PK.S) +1
+
           getTeamInputFromDatabase(
-            currentTeam + 'ch' + challengeData['Items'][key].PK.S
+            currentTeam +"_"+ 'ch' + getkey
           ).then(data2 => {
             challengeInfo.set(challengeData['Items'][key].PK.S, [
               challengeData['Items'][key].Description.S,

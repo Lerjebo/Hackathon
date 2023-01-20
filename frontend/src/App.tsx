@@ -6,7 +6,6 @@ const backGround = require('./deskBackground.JPG')
 function App () {
   const [teamInformation, setTeamInformation] = useState({
     PK: '',
-    ChallengeExpectedOutputs: new Map(),
     ChallengeInputs: new Map(),
     ChallengeStatus: new Map()
   })
@@ -38,7 +37,6 @@ function App () {
       .then(res => [res.data, res.status])
       .catch(reason => [reason, reason])
   }
-
   const getTeamFromDatabase = (teamId: any) => {
     let addr = API_BASE_URL + '/Hackathon/getTeam/teamId' + `/${teamId}`
     setQueueLock(true)
@@ -73,25 +71,27 @@ function App () {
         const [challengeData, status] = data
 
         Object.keys(challengeData['Items']).map(key => {
-          let getkey = parseInt(challengeData['Items'][key].PK.S) +1
+          let getkey = parseInt(challengeData['Items'][key].PK.S) + 1
 
-          getTeamInputFromDatabase(
-            currentTeam +"_"+ 'ch' + getkey
-          ).then(data2 => {
-            challengeInfo.set(challengeData['Items'][key].PK.S, [
-              challengeData['Items'][key].Description.S,
-              data2['0']
-            ])
+          getTeamInputFromDatabase(currentTeam + '_' + 'ch' + getkey).then(
+            data2 => {
+              challengeInfo.set(challengeData['Items'][key].PK.S, [
+                challengeData['Items'][key].Description.S,
+                data2['0']
+              ])
 
-            if (!challengeInfoKeys.includes(challengeData['Items'][key].PK.S)) {
-              challengeInfoKeys.push(challengeData['Items'][key].PK.S)
+              if (
+                !challengeInfoKeys.includes(challengeData['Items'][key].PK.S)
+              ) {
+                challengeInfoKeys.push(challengeData['Items'][key].PK.S)
+              }
+              if (
+                challengeInfo.size == Object.keys(challengeData['Items']).length
+              ) {
+                setloggedIn(true)
+              }
             }
-            if (
-              challengeInfo.size == Object.keys(challengeData['Items']).length
-            ) {
-              setloggedIn(true)
-            }
-          })
+          )
         })
       })
     }
@@ -110,48 +110,53 @@ function App () {
 
   const handleSubmit = (event: any) => {
     event.preventDefault()
-    let correctAnswer = teamInformation.ChallengeExpectedOutputs.get(
-      currentChallenge.toString()
-    ).N
-    correctAnswer =
-      typeof correctAnswer == 'undefined'
-        ? teamInformation.ChallengeExpectedOutputs.get(
+    let addr =
+      API_BASE_URL +
+      '/Hackathon/isCorrect/teamId/' +
+      `${currentTeam}` +
+      '/challengeId/' +
+      `${currentChallenge}` +
+      '/answer/' +
+      +`${inputs.answer.toString()}`
+    axios
+      .get(addr)
+      .then(res => {
+        let resp = res.data
+        let correctAns = resp == 'False' ? false : true
+        if (correctAns) {
+          let newInfo = teamInformation.ChallengeStatus.get(
             currentChallenge.toString()
-          ).S
-        : correctAnswer
-    if (inputs.answer == correctAnswer) {
-      let newInfo = teamInformation.ChallengeStatus.get(
-        currentChallenge.toString()
-      )
-      newInfo.BOOL = true
-      teamInformation.ChallengeStatus.set(currentChallenge.toString(), newInfo)
-      setTeamInformation(teamInformation)
+          )
+          newInfo.BOOL = true
+          teamInformation.ChallengeStatus.set(
+            currentChallenge.toString(),
+            newInfo
+          )
+          setTeamInformation(teamInformation)
 
-      updateTeamInDatabase(currentTeam, currentChallenge, true)
-      const element = window.document.getElementById('span' + currentChallenge)
-      if (element) {
-        element.style.visibility = 'visible'
-        alert('Correct!')
-      }
-    } else {
-      setInputs({ ...inputs, answer: '' })
-      alert('Incorrect, try again!')
-    }
+          updateTeamInDatabase(currentTeam, currentChallenge, true)
+          const element = window.document.getElementById(
+            'span' + currentChallenge
+          )
+          if (element) {
+            element.style.visibility = 'visible'
+            alert('Correct!')
+          }
+        } else {
+          setInputs({ ...inputs, answer: '' })
+          alert('Incorrect, try again!')
+        }
+      })
+      .catch(reason => console.log(reason))
   }
 
   const getTeamFromDataBaseAndSave = () => {
     getTeamFromDatabase(inputs.teamName).then(data => {
       const [teamData, status] = data
+
       if (Object.keys(teamData).length > 0) {
-        for (const [key, value] of Object.entries(
-          teamData.Item.ChallengeStatus.M
-        )) {
+        for (const [key, value] of Object.entries(teamData)) {
           teamInformation.ChallengeStatus.set(key, value)
-        }
-        for (const [key, value] of Object.entries(
-          teamData.Item.ChallengeExpectedOutputs.M
-        )) {
-          teamInformation.ChallengeExpectedOutputs.set(key, value)
         }
         setTeamInformation(teamInformation)
         setCurrentTeam(inputs.teamName)
@@ -170,7 +175,6 @@ function App () {
           })
           .catch(reason => alert('Could not add team, try again!'))
       }
-      
     })
   }
   if (currentTeam == '') {
@@ -281,18 +285,14 @@ function App () {
       </div>
     )
   } else {
-
     let keys: any[] = []
     let keys_one: any[] = []
-
-    teamInformation.ChallengeStatus.forEach(function(value, key) {
-      let newVal = parseInt(key)+1
+    teamInformation.ChallengeStatus.forEach(function (value, key) {
+      let newVal = parseInt(key) + 1
       keys.push(key)
       keys_one.push(newVal)
     })
 
- 
-      
     // Print the sorted array
     return (
       <>

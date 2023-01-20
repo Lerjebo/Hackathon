@@ -74,6 +74,57 @@ module.exports.getInput = async (event, context) => {
   }
 }
 
+
+
+module.exports.isCorrect = async (event, context) => {
+  let values = event['path'].split('/')
+  let tempS = ''
+  var arrayLength = values.length
+  for (var i = 3; i < arrayLength; i++) {
+    tempS += decodeURIComponent(values[i])
+  }
+
+  let teamId = decodeURIComponent(values[3])
+  let challengeId = decodeURIComponent(values[5])
+  let answer = decodeURIComponent(values[7])
+
+  var params = {
+    TableName: 'HackathonTeams',
+    Key: {
+      PK: {
+        S: teamId
+      }
+    }
+  }
+  let resp = await dynamodb.getItem(params).promise()
+  let correctAnswer = "False"
+  
+  if(typeof resp.Item != "undefined"){
+
+
+    if(typeof resp.Item.ChallengeExpectedOutputs.M[challengeId].N != "undefined"){
+      correctAnswer = resp.Item.ChallengeExpectedOutputs.M[challengeId].N == parseFloat(answer) ? "True" : correctAnswer
+    }else if(typeof resp.Item.ChallengeExpectedOutputs.M[challengeId].S != "undefined"){
+      correctAnswer = resp.Item.ChallengeExpectedOutputs.M[challengeId].S == answer ? "True" : correctAnswer
+    }
+
+    
+
+  }
+
+
+
+  return {
+    statusCode: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    },
+    body: correctAnswer
+  }
+}
+
+
+
 module.exports.getTeam = async (event, context) => {
   let values = event['path'].split('/')
   let tempS = ''
@@ -92,13 +143,30 @@ module.exports.getTeam = async (event, context) => {
     }
   }
   let resp = await dynamodb.getItem(params).promise()
-  return {
-    statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    },
-    body: JSON.stringify(resp)
+
+
+
+  if(typeof resp.Item != "undefined"){
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify(resp.Item.ChallengeStatus.M)
+    }
+  }else{
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify(resp)
+    }
   }
+
+
+
 }
 
 async function getChallenges (teamName) {
@@ -378,11 +446,11 @@ async function getChallenges (teamName) {
             case "5":
             case "7":
             case "9":
-                return num.substring(0, i + 1);
+                return parseInt(num.substring(0, i + 1));
         }
     }
     
-    return "";
+    return -1;
 };
 
   function generateRandomInputOdd() {
@@ -616,9 +684,7 @@ module.exports.postTeam = async (event, context) => {
   }
 }
 module.exports.updateTeam = async (event, context) => {
-  console.info(event)
   let data = JSON.parse(event['body'])
-  console.info(data)
 
   let teamName = data['teamName']
 
@@ -644,7 +710,6 @@ module.exports.updateTeam = async (event, context) => {
     }
   }
 
-  console.info(challengeStatusMap)
 
   let updExp = 'set ChallengeStatus =:updateValue'
   var params = {

@@ -54,6 +54,12 @@ functions:
       - http:
           path: /getInput/inputId/{inputId}
           method: get
+  isCorrect:
+    handler: handler.isCorrect
+    events:
+      - http:
+          path: /isCorrect/teamId/{teamId}/challengeId/{challengeId}/answer/{answer}
+          method: get
 
   upLoadInput:
     handler: handler.upLoadInput

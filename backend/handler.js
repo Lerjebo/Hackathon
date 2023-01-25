@@ -74,8 +74,6 @@ module.exports.getInput = async (event, context) => {
   }
 }
 
-
-
 module.exports.isCorrect = async (event, context) => {
   let values = event['path'].split('/')
   let tempS = ''
@@ -97,22 +95,70 @@ module.exports.isCorrect = async (event, context) => {
     }
   }
   let resp = await dynamodb.getItem(params).promise()
-  let correctAnswer = "False"
-  
-  if(typeof resp.Item != "undefined"){
+  let correctAnswer = 'False'
 
-
-    if(typeof resp.Item.ChallengeExpectedOutputs.M[challengeId].N != "undefined"){
-      correctAnswer = resp.Item.ChallengeExpectedOutputs.M[challengeId].N == parseFloat(answer) ? "True" : correctAnswer
-    }else if(typeof resp.Item.ChallengeExpectedOutputs.M[challengeId].S != "undefined"){
-      correctAnswer = resp.Item.ChallengeExpectedOutputs.M[challengeId].S == answer ? "True" : correctAnswer
+  if (typeof resp.Item != 'undefined') {
+    if (
+      typeof resp.Item.ChallengeExpectedOutputs.M[challengeId].N != 'undefined'
+    ) {
+      correctAnswer =
+        resp.Item.ChallengeExpectedOutputs.M[challengeId].N ==
+        parseFloat(answer)
+          ? 'True'
+          : correctAnswer
+    } else if (
+      typeof resp.Item.ChallengeExpectedOutputs.M[challengeId].S != 'undefined'
+    ) {
+      correctAnswer =
+        resp.Item.ChallengeExpectedOutputs.M[challengeId].S == answer
+          ? 'True'
+          : correctAnswer
     }
 
-    
+    if (
+      correctAnswer == 'True' &&
+      resp.Item.ChallengeStatus.M[challengeId].BOOL == false
+    ) {
+      let tempScore = parseInt(resp.Item.ChallengePoints.N) + 1
 
+      let updExp = 'set ChallengePoints =:updateValue'
+      var params = {
+        TableName: 'HackathonTeams',
+        Key: {
+          PK: teamId
+        },
+        UpdateExpression: updExp,
+        ExpressionAttributeValues: {
+          ':updateValue': tempScore
+        }
+      }
+      try {
+        await docClient.update(params).promise()
+      } catch (err) {
+        console.error(err)
+      }
+
+      var today = new Date()
+      let hours = parseInt(today.getHours()) + 1
+      var time = hours + ':' + today.getMinutes() + ':' + today.getSeconds()
+      let updExp2 = 'set ChallengeUpdateTime =:updateValue'
+      var params = {
+        TableName: 'HackathonTeams',
+        Key: {
+          PK: teamId
+        },
+        UpdateExpression: updExp2,
+        ExpressionAttributeValues: {
+          ':updateValue': time
+        }
+      }
+      try {
+        await docClient.update(params).promise()
+      } catch (err) {
+        console.error(err)
+      }
+    }
   }
-
-
 
   return {
     statusCode: 200,
@@ -122,8 +168,6 @@ module.exports.isCorrect = async (event, context) => {
     body: correctAnswer
   }
 }
-
-
 
 module.exports.getTeam = async (event, context) => {
   let values = event['path'].split('/')
@@ -144,10 +188,7 @@ module.exports.getTeam = async (event, context) => {
   }
   let resp = await dynamodb.getItem(params).promise()
 
-
-
-  if(typeof resp.Item != "undefined"){
-
+  if (typeof resp.Item != 'undefined') {
     return {
       statusCode: 200,
       headers: {
@@ -155,7 +196,7 @@ module.exports.getTeam = async (event, context) => {
       },
       body: JSON.stringify(resp.Item.ChallengeStatus.M)
     }
-  }else{
+  } else {
     return {
       statusCode: 200,
       headers: {
@@ -164,9 +205,6 @@ module.exports.getTeam = async (event, context) => {
       body: JSON.stringify(resp)
     }
   }
-
-
-
 }
 
 async function getChallenges (teamName) {
@@ -404,71 +442,69 @@ async function getChallenges (teamName) {
 
   //CHALLENGE 13
 
-  var reverseVowels = function([s]) {
-      const arr = [...s];
-      const VOWELS = 'aeiouAEIOU';
+  var reverseVowels = function ([s]) {
+    const arr = [...s]
+    const VOWELS = 'aeiouAEIOU'
 
-      for(let i = 0, j = arr.length - 1; i < j; i++, j--) {
-          while (!VOWELS.includes(arr[i]) && i < j) {
-              i++;
-          }
-  
-          while (!VOWELS.includes(arr[j]) && i < j) {
-              j--;
-          }
-  
-          [arr[i], arr[j]] = [arr[j], arr[i]];
+    for (let i = 0, j = arr.length - 1; i < j; i++, j--) {
+      while (!VOWELS.includes(arr[i]) && i < j) {
+        i++
       }
-  
-      return arr.join('');
-  };
 
-    //CHALLENGE 14
+      while (!VOWELS.includes(arr[j]) && i < j) {
+        j--
+      }
 
-  var firstNonRepeatedChar= function ([str]) {
+      ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    }
+
+    return arr.join('')
+  }
+
+  //CHALLENGE 14
+
+  var firstNonRepeatedChar = function ([str]) {
     for (let i = 0; i < str.length; i++) {
       if (str.indexOf(str[i]) === str.lastIndexOf(str[i])) {
-        return str[i];
+        return str[i]
       }
     }
-    return null;
+    return null
   }
   //CHALLENGE 15
 
-
-  var largestOddNumber = function([num]) {
-
+  var largestOddNumber = function ([num]) {
     // Go through the string backwards until an odd digit is found then return that substring
     for (let i = num.length - 1; i >= 0; i--) {
-        switch (num[i]) {
-            case "1":
-            case "3":
-            case "5":
-            case "7":
-            case "9":
-                return parseInt(num.substring(0, i + 1));
-        }
+      switch (num[i]) {
+        case '1':
+        case '3':
+        case '5':
+        case '7':
+        case '9':
+          return parseInt(num.substring(0, i + 1))
+      }
     }
-    
-    return -1;
-};
 
-  function generateRandomInputOdd() {
-    let num = "";
-    num += Math.floor(Math.random() * 9 +1);
+    return -1
+  }
+
+  function generateRandomInputOdd () {
+    let num = ''
+    num += Math.floor(Math.random() * 9 + 1)
 
     for (let i = 0; i < 25; i++) {
-      num += Math.floor(Math.random() * 10);
+      num += Math.floor(Math.random() * 10)
     }
-    
-    return num;
+
+    return num
   }
-  function generateRandomString(length, characters) {
-    let result ="";
+  function generateRandomString (length, characters) {
+    let result = ''
     for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
+      result += characters.charAt(Math.floor(Math.random() * characters.length))
     }
-    return result;
+    return result
   }
   function generateRandomInputVow (length) {
     let input = ''
@@ -479,10 +515,10 @@ async function getChallenges (teamName) {
   }
   function generateRandomInputTranslate (numWords) {
     let words = []
-    const firstRow = "qwertyuiop";
-    const secondRow = "asdfghjkl";
-    const thirdRow = "zxcvbnm";
-    const allChars = firstRow + secondRow + thirdRow;
+    const firstRow = 'qwertyuiop'
+    const secondRow = 'asdfghjkl'
+    const thirdRow = 'zxcvbnm'
+    const allChars = firstRow + secondRow + thirdRow
     // Use a loop to generate the words
     for (let i = 0; i < numWords; i++) {
       // Determine the row that the word will be generated from
@@ -518,23 +554,23 @@ async function getChallenges (teamName) {
     }
     return words
   }
-  function generateRandomInputVowels (stringLen ) {
-    const vowels = "aeiouAEIOU";
-    var s = "";
-    
+  function generateRandomInputVowels (stringLen) {
+    const vowels = 'aeiouAEIOU'
+    var s = ''
+
     // Use a loop to generate the string
     for (let i = 0; i < stringLen; i++) {
       // Use a random number between 0 and 1 to determine if the current character
       // is a vowel or not
       if (Math.random() < 0.2) {
         // 20% chance of the current character being a vowel
-        s += vowels.charAt(Math.floor(Math.random() * vowels.length));
+        s += vowels.charAt(Math.floor(Math.random() * vowels.length))
       } else {
         // 80% chance of the current character being a consonant
-        s += String.fromCharCode(97 + Math.floor(Math.random() * 26));
+        s += String.fromCharCode(97 + Math.floor(Math.random() * 26))
       }
     }
-    return s;
+    return s
   }
   //ADD challenge functions below.
   let challengeFunctions = [
@@ -553,14 +589,7 @@ async function getChallenges (teamName) {
     ([inp]) => findWords([inp]),
     ([inp]) => reverseVowels([inp]),
     ([inp]) => firstNonRepeatedChar([inp]),
-    ([inp]) => largestOddNumber([inp]),
-
-    
-
-
-    
-    
-
+    ([inp]) => largestOddNumber([inp])
   ]
 
   //ADD challenge inputs below.
@@ -619,10 +648,13 @@ async function getChallenges (teamName) {
     },
     () => [generateRandomInputTranslate(100)],
     () => [generateRandomInputVowels(50)],
-    () => [generateRandomString(Math.floor(Math.random()*15)+40, "abcdefghijklmnopqrstuvwxyz")],
+    () => [
+      generateRandomString(
+        Math.floor(Math.random() * 15) + 40,
+        'abcdefghijklmnopqrstuvwxyz'
+      )
+    ],
     () => [generateRandomInputOdd()]
-
-    
   ]
 
   let teamInput = []
@@ -633,7 +665,7 @@ async function getChallenges (teamName) {
     for (const itm in tempInp) {
       str += JSON.stringify(tempInp[itm]) + '\n'
     }
-    let ind = i+1
+    let ind = i + 1
     await s3
       .putObject({
         Bucket: 'codepage-hackathon-hackathon-inputfilesbucket-34eho671ijhs',
@@ -662,6 +694,9 @@ async function getChallenges (teamName) {
 module.exports.postTeam = async (event, context) => {
   let data = JSON.parse(event['body'])
   let teamName = data['teamName']
+  var today = new Date()
+  let hours = parseInt(today.getHours()) + 1
+  var time = hours + ':' + today.getMinutes() + ':' + today.getSeconds()
 
   const challengeInfo = await getChallenges(teamName)
 
@@ -670,7 +705,9 @@ module.exports.postTeam = async (event, context) => {
     Item: {
       PK: teamName,
       ChallengeStatus: challengeInfo[0],
-      ChallengeExpectedOutputs: challengeInfo[1]
+      ChallengeExpectedOutputs: challengeInfo[1],
+      ChallengePoints: 0,
+      ChallengeUpdateTime: time
     }
   }
   let resp = await docClient.put(params).promise()
@@ -709,7 +746,6 @@ module.exports.updateTeam = async (event, context) => {
       challengeStatusMap[key] = value.BOOL
     }
   }
-
 
   let updExp = 'set ChallengeStatus =:updateValue'
   var params = {

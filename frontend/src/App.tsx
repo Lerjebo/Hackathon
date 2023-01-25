@@ -2,6 +2,9 @@ import React from 'react'
 import './App.css'
 import axios from 'axios'
 import { useContext, useState, useEffect } from 'react'
+
+import { Audio } from 'react-loader-spinner'
+
 const backGround = require('./deskBackground.JPG')
 function App () {
   const [teamInformation, setTeamInformation] = useState({
@@ -9,6 +12,8 @@ function App () {
     ChallengeInputs: new Map(),
     ChallengeStatus: new Map()
   })
+  
+  const [loadingAnswer, setLoadingAnswer] = useState(false)
 
   const [challengeInfo, setChallengeInfo] = useState(() => new Map())
   const [challengeInfoKeys, setChallengeInfoKeys] = useState<String[]>([])
@@ -109,6 +114,7 @@ function App () {
   }
 
   const handleSubmit = (event: any) => {
+    setLoadingAnswer(true)
     event.preventDefault()
     let addr =
       API_BASE_URL +
@@ -133,6 +139,7 @@ function App () {
             newInfo
           )
           setTeamInformation(teamInformation)
+          setLoadingAnswer(false)
 
           updateTeamInDatabase(currentTeam, currentChallenge, true)
           const element = window.document.getElementById(
@@ -143,6 +150,8 @@ function App () {
             alert('Correct!')
           }
         } else {
+          setLoadingAnswer(false)
+
           setInputs({ ...inputs, answer: '' })
           alert('Incorrect, try again!')
         }
@@ -151,6 +160,7 @@ function App () {
   }
 
   const getTeamFromDataBaseAndSave = () => {
+    setCurrentTeam('LOAD')
     getTeamFromDatabase(inputs.teamName).then(data => {
       const [teamData, status] = data
 
@@ -187,11 +197,25 @@ function App () {
       <div
         id='ChallengeContainer'
         className='loginContainer'
-        style={{ width: '100vw', display: 'flex' }}
+        style={{
+          width: '100vw',
+          display: 'flex',
+          backgroundImage:
+            'linear-gradient(to right bottom, #113875, rgb(255 0 0 / 58%))',
+            height:"100vh"
+        }}
       >
         <div
           className='paper'
-          style={{ width: '60%', margin: 'auto', display: 'flex' }}
+          style={{
+            width: 'fit-content',
+            height: 'fit-content',
+            borderRadius: '50px',
+            margin: 'auto',
+            display: 'flex',
+            background: 'rgb(16 109 190 / 19%)',
+            fontFamily: 'monospace'
+          }}
         >
           <div className='pattern' style={{ width: '100%' }}>
             <div>
@@ -201,7 +225,6 @@ function App () {
                   display: 'inline-grid',
                   marginTop: '10%',
                   marginBottom: '10%',
-                  background: 'white',
                   width: '100%'
                 }}
                 onSubmit={handleSubmitTeamName}
@@ -212,7 +235,8 @@ function App () {
                     width: '60%',
                     borderRadius: '100px',
                     textAlign: 'center',
-                    fontSize: 'xx-large'
+                    fontSize: 'xx-large',
+                    fontFamily: 'monospace'
                   }}
                 >
                   Teamname
@@ -245,13 +269,14 @@ function App () {
                   style={{
                     margin: 'auto',
 
-                    marginTop: '20px',
+                    marginTop: '10px',
                     width: '60%',
                     borderRadius: '100px',
                     textAlign: 'center',
                     fontSize: 'xx-large',
                     background: 'rgb(139, 161, 125)',
-                    marginBottom: '20px'
+                    marginBottom: '10px',
+                    fontFamily: 'monospace'
                   }}
                   type='submit'
                   value={'Log in'}
@@ -262,14 +287,16 @@ function App () {
         </div>
       </div>
     )
-  } else if (!loggedIn) {
+  } else if (!loggedIn || currentTeam == 'LOAD') {
     return (
       <div
         className='Container'
         style={{
           width: '100%',
           height: '100vh',
-          display: 'flex'
+          display: 'flex',
+          backgroundImage:
+            'linear-gradient(to right bottom, #113875, rgb(255 0 0 / 58%))'
         }}
       >
         <div className='lds-roller'>
@@ -297,145 +324,219 @@ function App () {
     return (
       <>
         <div
-          className='Container'
           style={{
-            width: '100%',
-            height: '5vh',
-            display: 'flex'
+            backgroundImage:
+              'linear-gradient(to right bottom, #113875, rgb(255 0 0 / 58%))',
+              overflow:"auto",
+              height:"100vh"
           }}
         >
           <div
-            className='contentPattern'
-            style={{ margin: 'auto', width: '100%', display: 'flex' }}
+            className='Container'
+            style={{
+              width: '100%',
+              height: 'fit-content',
+              display: 'flex',
+              background: 'rgba(16, 109, 190, 0.19)',
+            }}
           >
             <div
+              className='contentPattern'
+              style={{ margin: 'auto', width: '100%', display: 'flex' }}
+            >
+              <div
+                style={{
+                  marginLeft: '5%',
+                  color: 'black',
+                  background: '#8BA17D',
+                  display: 'flex',
+                  border: '2px solid black',
+                  padding: '5px',
+                  borderRadius: '50px'
+                }}
+              >
+                <a style={{ margin: 'auto', fontFamily: 'monospace' }}>
+                  {' '}
+                  {'Team name: ' + currentTeam}{' '}
+                </a>
+              </div>
+              <input
+                onClick={() => window.location.reload()}
+                className='inputOnHover'
+                style={{
+                  borderRadius: '100px',
+                  textAlign: 'center',
+                  margin: 'auto',
+                  marginRight: '5%',
+
+                  fontSize: 'xx-large',
+                  background: 'rgb(139, 161, 125)',
+                  fontFamily: 'monospace'
+                }}
+                type='submit'
+                value={'Log out'}
+              />{' '}
+            </div>
+          </div>
+
+          <div id='Container' className='Container' style={{ height: 'fit-content',width:"100vw",margin:"auto", marginTop:"10vh",position:"relative"}}>
+            <div
+              className='paper'
               style={{
-                marginLeft: '5%',
-                color: 'black',
-                background: '#8BA17D',
-                display: 'flex',
-                border: '2px solid black'
+             
+                height: 'fit-content',
+                borderRadius: '50px',
+                margin:"auto",
+                /*top: '40%',
+                transform: 'translateY(-40%)',*/
+                background: 'rgb(16 109 190 / 19%)',
+                padding: '10px',
+                paddingLeft:"20px",
+                width:"20vw",
+                
+              
               }}
             >
-              <a style={{ margin: 'auto' }}> {'Team name: ' + currentTeam} </a>
-            </div>
-            <input
-              onClick={() => window.location.reload()}
-              className='inputOnHover'
-              style={{
-                borderRadius: '100px',
-                textAlign: 'center',
-                margin: 'auto',
-                marginRight: '5%',
+              <div className='pattern'>
+                <div className='contentPattern'>
+              
+                  {keys.map(key => (
+                    <>
+                      <a
+                        href='#'
+                        className='ChallengeTextStyle'
+                        onClick={() => onClickChallenge(key)}
+                        style={{
+                          textDecoration: 'None',
+                          fontFamily: 'monospace'
+                        }}
+                      >
+                        {' '}
+                        {'Challenge: ' + keys_one[key]}
+                      </a>
 
-                fontSize: 'xx-large',
-                background: 'rgb(139, 161, 125)'
-              }}
-              type='submit'
-              value={'Switch team'}
-            />{' '}
-          </div>
-        </div>
-        <div id='Container' className='Container' style={{ height: '95vh' }}>
-          <div className='paper' style={{ width: '30%' }}>
-            <div className='pattern'>
-              <div className='contentPattern'>
-                {keys.map(key => (
-                  <>
-                    <a
-                      href='#'
-                      className='ChallengeTextStyle'
-                      onClick={() => onClickChallenge(key)}
-                      style={{ textDecoration: 'None' }}
-                    >
-                      {' '}
-                      {'Challenge: ' + keys_one[key]}
-                    </a>
-
-                    <span
-                      id={'span' + key}
-                      style={{
-                        visibility:
-                          teamInformation.ChallengeStatus.get(key).BOOL == true
-                            ? 'visible'
-                            : 'hidden',
-                        color: 'green',
-                        marginLeft: '10px'
-                      }}
-                    >
-                      &#10003;
-                    </span>
-                    <br />
-                  </>
-                ))}
-              </div>
-            </div>
-          </div>{' '}
-          <div className='paper' style={{ width: '60%' }}>
-            <div className='pattern'>
-              <div
-                className='contentPattern'
-                style={{ position: 'relative', height: '100%' }}
-              >
-                <div style={{ marginLeft: '7%', marginRight: '3%' }}>
-                  {'Challenge ' + keys_one[currentChallenge]}
-                  <br />
-                  <br />
-                  {challengeInfo.get(currentChallenge.toString())[0]}
-
-                  <br />
-                  <br />
-                  <a
-                    target='_blank'
-                    href={challengeInfo.get(currentChallenge.toString())[1]}
-                  >
-                    Download input file
-                  </a>
+                      <span
+                        id={'span' + key}
+                        style={{
+                          visibility:
+                            teamInformation.ChallengeStatus.get(key).BOOL ==
+                            true
+                              ? 'visible'
+                              : 'hidden',
+                          color: 'green',
+                          marginLeft: '10px'
+                        }}
+                      >
+                        &#10003;
+                      </span>
+                      <br />
+                    </>
+                  ))}
                 </div>
+              </div>
+            </div>{' '}
+            <div
+              className='paper'
+              style={{
+                borderRadius: '50px',
+                background: 'rgb(16 109 190 / 19%)',
+                height: 'fit-content',
+              
+                padding:"10px",
+                width:"60vw",
+                margin:"auto",
+              }}
+            >
+  
+              <div className='pattern'>
                 <div
-                  style={{ position: 'absolute', bottom: '10%', width: '100%' }}
+                  className='contentPattern'
+                  style={{ position: 'relative', height: '100%' }}
                 >
-                  <form onSubmit={handleSubmit}>
-                    <label
-                      style={{
-                        width: '60%',
-                        borderRadius: '100px',
-                        textAlign: 'center',
-                        fontSize: 'xx-large',
-                        background: 'white'
-                      }}
+                  <div
+                    style={{
+                      marginLeft: '7%',
+                      marginRight: '3%',
+                      fontFamily: 'monospace'
+                    }}
+                  >
+                    {'Challenge ' + keys_one[currentChallenge]}
+                    <br />
+                    <br />
+                    {challengeInfo.get(currentChallenge.toString())[0]}
+
+                    <br />
+                    <br />
+                    <a
+                      target='_blank'
+                      href={challengeInfo.get(currentChallenge.toString())[1]}
                     >
-                      Answer
-                    </label>
-                    <br />
-                    <input
-                      required
-                      style={{
-                        width: '60%',
-                        borderRadius: '100px',
-                        textAlign: 'center',
-                        fontSize: 'xx-large'
-                      }}
-                      type='text'
-                      name='answer'
-                      value={inputs.answer || ''}
-                      onChange={handleChange}
-                    />
-                    <br />
-                    <input
-                      className='inputOnHover'
-                      style={{
-                        marginTop: '20px',
-                        width: '60%',
-                        borderRadius: '100px',
-                        textAlign: 'center',
-                        fontSize: 'xx-large',
-                        background: '#8BA17D'
-                      }}
-                      type='submit'
-                      value={'Submit'}
-                    />
-                  </form>
+                      Download input file
+                    </a>
+                  </div>
+                  {loadingAnswer ? (                  <div className='lds-roller'>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>):(null)}
+
+                  <div
+                    style={{
+                      marginTop: '5vh',
+                      bottom: '10%',
+                      width: '100%'
+                    }}
+                  >
+                    <form onSubmit={handleSubmit}>
+                      <label
+                        style={{
+                          width: '60%',
+                          borderRadius: '100px',
+                          textAlign: 'center',
+                          fontSize: 'xx-large',
+                          fontFamily: 'monospace'
+                        }}
+                      >
+                        Answer
+                      </label>
+                      <br />
+
+                      <input
+                        required
+                        style={{
+                          width: '60%',
+                          borderRadius: '100px',
+                          textAlign: 'center',
+                          fontSize: 'xx-large',
+                          fontFamily: 'monospace'
+                        }}
+                        type='text'
+                        name='answer'
+                        value={inputs.answer || ''}
+                        onChange={handleChange}
+                      />
+                      <br />
+                      <input
+                        className='inputOnHover'
+                        style={{
+                          marginTop: '20px',
+                          width: '60%',
+                          borderRadius: '100px',
+                          textAlign: 'center',
+                          fontSize: 'xx-large',
+                          background: '#8BA17D',
+                          fontFamily: 'monospace'
+                        }}
+                        type='submit'
+                        value={'Submit'}
+                      />
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>

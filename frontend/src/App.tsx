@@ -8,7 +8,7 @@ function App () {
     ChallengeInputs: new Map(),
     ChallengeStatus: new Map()
   })
-  
+
   const [loadingAnswer, setLoadingAnswer] = useState(false)
 
   const [challengeInfo, setChallengeInfo] = useState(() => new Map())
@@ -198,7 +198,7 @@ function App () {
           display: 'flex',
           backgroundImage:
             'linear-gradient(to right bottom, #113875, rgb(255 0 0 / 58%))',
-            height:"100vh"
+          height: '100vh'
         }}
       >
         <div
@@ -323,8 +323,8 @@ function App () {
           style={{
             backgroundImage:
               'linear-gradient(to right bottom, #113875, rgb(255 0 0 / 58%))',
-              overflow:"auto",
-              height:"100vh"
+            overflow: 'auto',
+            height: '100vh'
           }}
         >
           <div
@@ -333,7 +333,7 @@ function App () {
               width: '100%',
               height: 'fit-content',
               display: 'flex',
-              background: 'rgba(16, 109, 190, 0.19)',
+              background: 'rgba(16, 109, 190, 0.19)'
             }}
           >
             <div
@@ -375,27 +375,33 @@ function App () {
             </div>
           </div>
 
-          <div id='Container' className='Container' style={{ height: 'fit-content',width:"100vw",margin:"auto", marginTop:"10vh",position:"relative"}}>
+          <div
+            id='Container'
+            className='Container'
+            style={{
+              height: 'fit-content',
+              width: '100vw',
+              margin: 'auto',
+              marginTop: '10vh',
+              position: 'relative'
+            }}
+          >
             <div
               className='paper'
               style={{
-             
                 height: 'fit-content',
                 borderRadius: '50px',
-                margin:"auto",
+                margin: 'auto',
                 /*top: '40%',
                 transform: 'translateY(-40%)',*/
                 background: 'rgb(16 109 190 / 19%)',
                 padding: '10px',
-                paddingLeft:"20px",
-                width:"20vw",
-                
-              
+                paddingLeft: '20px',
+                width: '20vw'
               }}
             >
               <div className='pattern'>
                 <div className='contentPattern'>
-              
                   {keys.map(key => (
                     <>
                       <a
@@ -437,13 +443,12 @@ function App () {
                 borderRadius: '50px',
                 background: 'rgb(16 109 190 / 19%)',
                 height: 'fit-content',
-              
-                padding:"10px",
-                width:"60vw",
-                margin:"auto",
+
+                padding: '10px',
+                width: '60vw',
+                margin: 'auto'
               }}
             >
-  
               <div className='pattern'>
                 <div
                   className='contentPattern'
@@ -453,7 +458,8 @@ function App () {
                     style={{
                       marginLeft: '7%',
                       marginRight: '3%',
-                      fontFamily: 'monospace'
+                      fontFamily: 'monospace',
+                      fontSize:"120%"
                     }}
                   >
                     {'Challenge ' + keys_one[currentChallenge]}
@@ -470,16 +476,18 @@ function App () {
                       Download input file
                     </a>
                   </div>
-                  {loadingAnswer ? (                  <div className='lds-roller'>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                  </div>):(null)}
+                  {loadingAnswer ? (
+                    <div className='lds-roller' style={{position:"absolute",float:"right",right:"0",bottom:"0"}}>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  ) : null}
 
                   <div
                     style={{

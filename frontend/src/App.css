@@ -267,7 +267,6 @@ li:nth-child(3n - 1)::marker {
 
   line-height: 25px;
   font-family: 'Dancing Script', cursive;
-  font-size: 19px;
   letter-spacing: 1px;
   word-spacing: 5px;
 }

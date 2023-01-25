@@ -2,10 +2,6 @@ import React from 'react'
 import './App.css'
 import axios from 'axios'
 import { useContext, useState, useEffect } from 'react'
-
-import { Audio } from 'react-loader-spinner'
-
-const backGround = require('./deskBackground.JPG')
 function App () {
   const [teamInformation, setTeamInformation] = useState({
     PK: '',

@@ -351,7 +351,7 @@ function App () {
                   borderRadius: '50px'
                 }}
               >
-                <a style={{ margin: 'auto', fontFamily: 'monospace' }}>
+                <a style={{ margin: 'auto', fontFamily: 'monospace', fontSize:"130%" }}>
                   {' '}
                   {'Team name: ' + currentTeam}{' '}
                 </a>

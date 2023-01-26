@@ -67,7 +67,7 @@ function App () {
   useEffect(() => {}, [JSON.stringify(teamInformation)])
 
   useEffect(() => {
-    if (Object.keys(challengeInfo).length == 0 && currentTeam != '') {
+    if (Object.keys(challengeInfo).length == 0 && currentTeam != '' && currentTeam != "LOAD") {
       getChallengesFromDatabase().then(data => {
         const [challengeData, status] = data
 
@@ -197,7 +197,7 @@ function App () {
           width: '100vw',
           display: 'flex',
           backgroundImage:
-            'linear-gradient(to right bottom, #113875, rgb(255 0 0 / 58%))',
+            'linear-gradient(to right bottom, rgb(234 239 247), hwb(0deg 0% 100% / 96%))',
           height: '100vh'
         }}
       >
@@ -292,7 +292,7 @@ function App () {
           height: '100vh',
           display: 'flex',
           backgroundImage:
-            'linear-gradient(to right bottom, #113875, rgb(255 0 0 / 58%))'
+            'linear-gradient(to right bottom, rgb(234 239 247), hwb(0deg 0% 100% / 96%))'
         }}
       >
         <div className='lds-roller'>
@@ -307,7 +307,7 @@ function App () {
         </div>
       </div>
     )
-  } else {
+  } else  {
     let keys: any[] = []
     let keys_one: any[] = []
     teamInformation.ChallengeStatus.forEach(function (value, key) {
@@ -316,13 +316,12 @@ function App () {
       keys_one.push(newVal)
     })
 
-    // Print the sorted array
     return (
       <>
         <div
           style={{
             backgroundImage:
-              'linear-gradient(to right bottom, #113875, rgb(255 0 0 / 58%))',
+              'linear-gradient(to right bottom, rgb(234 239 247), hwb(0deg 0% 100% / 96%))',
             overflow: 'auto',
             height: '100vh'
           }}
@@ -332,9 +331,7 @@ function App () {
             style={{
               width: '100%',
               height: 'fit-content',
-              display: 'flex',
-              background: 'rgba(16, 109, 190, 0.19)'
-            }}
+              display: 'flex'            }}
           >
             <div
               className='contentPattern'

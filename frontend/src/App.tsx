@@ -110,6 +110,7 @@ function App () {
   }
 
   const handleSubmit = (event: any) => {
+    console.log(inputs.answer.toString())
     setLoadingAnswer(true)
     event.preventDefault()
     let addr =
@@ -118,8 +119,7 @@ function App () {
       `${currentTeam}` +
       '/challengeId/' +
       `${currentChallenge}` +
-      '/answer/' +
-      +`${inputs.answer.toString()}`
+      '/answer/' +inputs.answer.toString()
     axios
       .get(addr)
       .then(res => {
@@ -209,7 +209,7 @@ function App () {
             borderRadius: '50px',
             margin: 'auto',
             display: 'flex',
-            background: 'rgb(16 109 190 / 19%)',
+            background: 'rgb(248 250 253 / 25%)',
             fontFamily: 'monospace'
           }}
         >
@@ -363,7 +363,7 @@ function App () {
                   marginRight: '5%',
 
                   fontSize: 'xx-large',
-                  background: 'rgb(139, 161, 125)',
+                  background: '#8BA17D',
                   fontFamily: 'monospace'
                 }}
                 type='submit'
@@ -391,7 +391,7 @@ function App () {
                 margin: 'auto',
                 /*top: '40%',
                 transform: 'translateY(-40%)',*/
-                background: 'rgb(16 109 190 / 19%)',
+                background: 'rgb(248 250 253 / 25%)',
                 padding: '10px',
                 paddingLeft: '20px',
                 width: '20vw'
@@ -438,7 +438,7 @@ function App () {
               className='paper'
               style={{
                 borderRadius: '50px',
-                background: 'rgb(16 109 190 / 19%)',
+                background: 'rgb(248 250 253 / 25%)',
                 height: 'fit-content',
 
                 padding: '10px',

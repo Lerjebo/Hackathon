@@ -78,10 +78,17 @@ functions:
           cors: true
 
   postTeam:
-    handler: handler.postTeam
+    handler: challengeHandler.postTeam
     events:
       - http:
           path: /postTeam
+          method: post
+          cors: true
+  postAllChallenges:
+    handler: challengeHandler.postAllChallenges
+    events:
+      - http:
+          path: /postChallenges
           method: post
           cors: true
 

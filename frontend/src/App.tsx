@@ -110,7 +110,6 @@ function App () {
   }
 
   const handleSubmit = (event: any) => {
-    console.log(inputs.answer.toString())
     setLoadingAnswer(true)
     event.preventDefault()
     let addr =
